@@ -3,12 +3,12 @@
 # $File: dump-caffe-params.py
 # $Date: Tue Mar 29 23:46:27 2016 +0800
 # $Author: Xinyu Zhou <zxytim[at]gmail[dot]com>
-import _init_paths
+# import _init_paths
 import sys
-# caffe_root = '../caffe/'
-# sys.path.insert(0, '../caffe/python/')
-sys.path.insert(0, '../lib/')
-sys.path.insert(0, './')
+# # caffe_root = '../caffe/'
+# # sys.path.insert(0, '../caffe/python/')
+# sys.path.insert(0, '../lib/')
+# sys.path.insert(0, './')
 import caffe
 import argparse
 

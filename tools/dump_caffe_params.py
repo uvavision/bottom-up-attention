@@ -36,12 +36,14 @@ net = caffe.Net(prototxt, caffe.TEST, weights=weights)
 
 rst = dict()
 for name, p in net.params.items():
-    W, b = p
-    # if name.startswith('fc'):
-    #     from IPython import embed; embed()
-    rst['{}:W'.format(name)] = W.data
-    rst['{}:b'.format(name)] = b.data
-    print(name, W.data.shape, b.data.shape)
+    print('name', name)
+    print('p', p)
+    # W, b = p
+    # # if name.startswith('fc'):
+    # #     from IPython import embed; embed()
+    # rst['{}:W'.format(name)] = W.data
+    # rst['{}:b'.format(name)] = b.data
+    # print(name, W.data.shape, b.data.shape)
 
 with open('example.npy', 'wb') as f:
     pickle.dump(rst, f, protocol=pickle.HIGHEST_PROTOCOL)

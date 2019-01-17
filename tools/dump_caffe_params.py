@@ -18,17 +18,17 @@ if sys.version_info.major < 2:
 else:
     import pickle
 
-# Check object extraction
-from fast_rcnn.config import cfg, cfg_from_file
-from fast_rcnn.test import im_detect,_get_blobs
-from fast_rcnn.nms_wrapper import nms
-import cv2
+# # Check object extraction
+# from fast_rcnn.config import cfg, cfg_from_file
+# from fast_rcnn.test import im_detect,_get_blobs
+# from fast_rcnn.nms_wrapper import nms
+# import cv2
 
-GPU_ID = 1   # if we have multiple GPUs, pick one 
-caffe.set_device(GPU_ID)  
-caffe.set_mode_gpu()
-net = None
-cfg_from_file('../experiments/cfgs/faster_rcnn_end2end_resnet.yml')
+# GPU_ID = 1   # if we have multiple GPUs, pick one 
+# caffe.set_device(GPU_ID)  
+# caffe.set_mode_gpu()
+# net = None
+# cfg_from_file('../experiments/cfgs/faster_rcnn_end2end_resnet.yml')
 weights = '../data/faster_rcnn_models/resnet101_faster_rcnn_final.caffemodel'
 prototxt = '../models/vg/ResNet-101/faster_rcnn_end2end_final/test.prototxt'
 

@@ -36,8 +36,10 @@ net = caffe.Net(prototxt, caffe.TEST, weights=weights)
 
 rst = dict()
 for name, p in net.params.items():
-    print('name', name)
-    print('p', p)
+    n_params = len(p)
+    for i in range(n_params):
+        print(name, n_params, i, p[i].data.shape)
+    print('----------')
     # W, b = p
     # # if name.startswith('fc'):
     # #     from IPython import embed; embed()

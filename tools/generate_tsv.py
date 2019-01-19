@@ -35,8 +35,11 @@ FIELDNAMES = ['image_id', 'image_w','image_h','num_boxes', 'boxes', 'features']
 
 # Settings for the number of features per image. To re-create pretrained features with 36 features
 # per image, set both values to 36. 
-MIN_BOXES = 10
-MAX_BOXES = 100
+# MIN_BOXES = 10
+# MAX_BOXES = 100
+MIN_BOXES = 36
+MAX_BOXES = 36
+
 
 def load_image_ids(split_name):
     ''' Load a list of (path,image_id tuples). Modify this to suit your data locations. '''
@@ -56,10 +59,11 @@ def load_image_ids(split_name):
           filepath = os.path.join('/data/test2015/', item['file_name'])
           split.append((filepath,image_id))
     elif split_name == 'genome':
-      with open('/data/visualgenome/image_data.json') as f:
+      with open('/af12/ft3ex/research/bottom-up-attention/data/genome/image_data.json') as f:
         for item in json.load(f):
           image_id = int(item['image_id'])
-          filepath = os.path.join('/data/visualgenome/', item['url'].split('rak248/')[-1])
+        #   filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/genome/VG_100K', item['url'].split('rak248/')[-1])
+          filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/genome/VG_100K', '%d.jpg'%image_id)
           split.append((filepath,image_id))      
     else:
       print 'Unknown split'
@@ -171,8 +175,6 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
                     count += 1
 
                     
-
-
 def merge_tsvs():
     test = ['/work/data/tsv/test2015/resnet101_faster_rcnn_final_test.tsv.%d' % i for i in range(8)]
 

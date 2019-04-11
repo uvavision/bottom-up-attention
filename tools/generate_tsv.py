@@ -34,9 +34,7 @@ import random
 import json
 
 csv.field_size_limit(sys.maxsize)
-
-
-FIELDNAMES = ['image_id', 'image_w','image_h','num_boxes', 'boxes', 'features']
+FIELDNAMES = ['image_id', 'image_w','image_h','num_boxes', 'boxes', 'features', 'class_inds']
 
 # Settings for the number of features per image. To re-create pretrained features with 36 features
 # per image, set both values to 36. 
@@ -44,6 +42,18 @@ FIELDNAMES = ['image_id', 'image_w','image_h','num_boxes', 'boxes', 'features']
 # MAX_BOXES = 100
 MIN_BOXES = 36
 MAX_BOXES = 36
+
+# data_path = '../data/genome/1600-400-20'
+# # Load classes
+# classes = ['__background__']
+# with open(os.path.join(data_path, 'objects_vocab.txt')) as f:
+#     for obj in f.readlines():
+#         classes.append(obj.split(',')[0].lower().strip())
+# # Load attributes
+# attributes = ['__no_attribute__']
+# with open(os.path.join(data_path, 'attributes_vocab.txt')) as f:
+#     for att in f.readlines():
+#         attributes.append(att.split(',')[0].lower().strip())
 
 
 def load_image_ids(split_name):
@@ -76,7 +86,6 @@ def load_image_ids(split_name):
 
     
 def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
-
     im = cv2.imread(im_file)
     scores, boxes, attr_scores, rel_scores = im_detect(net, im)
 
@@ -102,6 +111,9 @@ def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
         keep_boxes = np.argsort(max_conf)[::-1][:MIN_BOXES]
     elif len(keep_boxes) > MAX_BOXES:
         keep_boxes = np.argsort(max_conf)[::-1][:MAX_BOXES]
+
+    # detected objects
+    obj_inds = np.argmax(cls_prob[keep_boxes][:,1:], axis=1) + 1
    
     return {
         'image_id': image_id,
@@ -109,7 +121,8 @@ def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
         'image_w': np.size(im, 1),
         'num_boxes' : len(keep_boxes),
         'boxes': base64.b64encode(cls_boxes[keep_boxes]),
-        'features': base64.b64encode(pool5[keep_boxes])
+        'features': base64.b64encode(pool5[keep_boxes]),
+        'class_inds': base64.b64encode(obj_inds)
     }   
 
 
@@ -195,47 +208,46 @@ def merge_tsvs():
                     except Exception as e:
                       print e                           
 
-                      
-     
+                        
 if __name__ == '__main__':
 
-    # args = parse_args()
+    args = parse_args()
 
-    # print('Called with args:')
-    # print(args)
+    print('Called with args:')
+    print(args)
 
-    # if args.cfg_file is not None:
-    #     cfg_from_file(args.cfg_file)
-    # if args.set_cfgs is not None:
-    #     cfg_from_list(args.set_cfgs)
+    if args.cfg_file is not None:
+        cfg_from_file(args.cfg_file)
+    if args.set_cfgs is not None:
+        cfg_from_list(args.set_cfgs)
 
-    # gpu_id = args.gpu_id
-    # gpu_list = gpu_id.split(',')
-    # gpus = [int(i) for i in gpu_list]
+    gpu_id = args.gpu_id
+    gpu_list = gpu_id.split(',')
+    gpus = [int(i) for i in gpu_list]
 
-    # print('Using config:')
-    # pprint.pprint(cfg)
-    # assert cfg.TEST.HAS_RPN
+    print('Using config:')
+    pprint.pprint(cfg)
+    assert cfg.TEST.HAS_RPN
 
-    # image_ids = load_image_ids(args.data_split)
-    # random.seed(10)
-    # random.shuffle(image_ids)
-    # # Split image ids between gpus
-    # image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
+    image_ids = load_image_ids(args.data_split)
+    random.seed(10)
+    random.shuffle(image_ids)
+    # Split image ids between gpus
+    image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
     
-    # caffe.init_log()
-    # caffe.log('Using devices %s' % str(gpus))
-    # procs = []    
+    caffe.init_log()
+    caffe.log('Using devices %s' % str(gpus))
+    procs = []    
     
-    # for i,gpu_id in enumerate(gpus):
-    #     outfile = '%s.%d' % (args.outfile, gpu_id)
-    #     p = Process(target=generate_tsv,
-    #                 args=(gpu_id, args.prototxt, args.caffemodel, image_ids[i], outfile))
-    #     p.daemon = True
-    #     p.start()
-    #     procs.append(p)
-    # for p in procs:
-    #     p.join()     
+    for i,gpu_id in enumerate(gpus):
+        outfile = '%s.%d' % (args.outfile, gpu_id)
+        p = Process(target=generate_tsv,
+                    args=(gpu_id, args.prototxt, args.caffemodel, image_ids[i], outfile))
+        p.daemon = True
+        p.start()
+        procs.append(p)
+    for p in procs:
+        p.join()     
 
-    merge_tsvs()       
+    # merge_tsvs()       
                   

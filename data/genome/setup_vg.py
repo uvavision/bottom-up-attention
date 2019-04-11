@@ -188,9 +188,11 @@ def build_vocabs_and_xml():
       if rel["subject_id"] in object_set and rel["object_id"] in object_set:
         if predicate in relations:
           re = ET.SubElement(ann, "relation")
+          ET.SubElement(re, "relationship_id").text = str(rel["relationship_id"])
           ET.SubElement(re, "subject_id").text = str(rel["subject_id"])
           ET.SubElement(re, "object_id").text = str(rel["object_id"])
           ET.SubElement(re, "predicate").text = predicate
+
     
     outFile = url_split[-1].replace(".jpg",".xml")
     tree = ET.ElementTree(ann)
@@ -202,7 +204,7 @@ def build_vocabs_and_xml():
 if __name__ == "__main__":
 
   # First, use visual genome library to merge attributes and scene graphs
-  vg.AddAttrsToSceneGraphs(dataDir=dataDir)
+  # vg.AddAttrsToSceneGraphs(dataDir=dataDir)
   # Next, build xml files
   build_vocabs_and_xml()
   

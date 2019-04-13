@@ -194,7 +194,7 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
 
                     
 def merge_tsvs():
-    test = ['vg10100.tsv.%d' % i for i in range(2)]
+    test = ['vg10100.tsv.%d' % i for i in range(1, 3)]
     outfile = 'vg10100_final.tsv'
     with open(outfile, 'ab') as tsvfile:
         writer = csv.DictWriter(tsvfile, delimiter = '\t', fieldnames = FIELDNAMES)   

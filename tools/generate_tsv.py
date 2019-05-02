@@ -60,28 +60,35 @@ def load_image_ids(split_name):
     ''' Load a list of (path,image_id tuples). Modify this to suit your data locations. '''
     split = []
     if split_name == 'coco_test2014':
-      with open('/data/coco/annotations/image_info_test2014.json') as f:
-        data = json.load(f)
-        for item in data['images']:
-          image_id = int(item['id'])
-          filepath = os.path.join('/data/test2014/', item['file_name'])
-          split.append((filepath,image_id))
+        with open('/data/coco/annotations/image_info_test2014.json') as f:
+            data = json.load(f)
+            for item in data['images']:
+                image_id = int(item['id'])
+                filepath = os.path.join('/data/test2014/', item['file_name'])
+                split.append((filepath,image_id))
     elif split_name == 'coco_test2015':
-      with open('/data/coco/annotations/image_info_test2015.json') as f:
-        data = json.load(f)
-        for item in data['images']:
-          image_id = int(item['id'])
-          filepath = os.path.join('/data/test2015/', item['file_name'])
-          split.append((filepath,image_id))
+        with open('/data/coco/annotations/image_info_test2015.json') as f:
+            data = json.load(f)
+            for item in data['images']:
+                image_id = int(item['id'])
+                filepath = os.path.join('/data/test2015/', item['file_name'])
+                split.append((filepath,image_id))
     elif split_name == 'genome':
-      with open('/af12/ft3ex/research/bottom-up-attention/data/genome/image_data.json') as f:
-        for item in json.load(f):
-          image_id = int(item['image_id'])
-        #   filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/genome/VG_100K', item['url'].split('rak248/')[-1])
-          filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/genome/VG_100K', '%d.jpg'%image_id)
-          split.append((filepath,image_id))      
+        with open('/af12/ft3ex/research/bottom-up-attention/data/genome/image_data.json') as f:
+            for item in json.load(f):
+                image_id = int(item['image_id'])
+                #   filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/genome/VG_100K', item['url'].split('rak248/')[-1])
+                filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/genome/VG_100K', '%d.jpg'%image_id)
+                split.append((filepath, image_id))  
+    elif split_name == 'coco_all':
+        with open('/af12/ft3ex/research/bottom-up-attention/data/coco/image_data.json') as f:
+            data_ =  json.load(f):
+            for k, v in data_.items():
+                image_id = int(k)
+                filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/coco/images', v)
+                split.append((filepath, image_id)) 
     else:
-      print 'Unknown split'
+        print 'Unknown split'
     return split
 
     
@@ -210,43 +217,43 @@ def merge_tsvs():
 
                         
 if __name__ == '__main__':
-    # args = parse_args()
+    args = parse_args()
 
-    # print('Called with args:')
-    # print(args)
+    print('Called with args:')
+    print(args)
 
-    # if args.cfg_file is not None:
-    #     cfg_from_file(args.cfg_file)
-    # if args.set_cfgs is not None:
-    #     cfg_from_list(args.set_cfgs)
+    if args.cfg_file is not None:
+        cfg_from_file(args.cfg_file)
+    if args.set_cfgs is not None:
+        cfg_from_list(args.set_cfgs)
 
-    # gpu_id = args.gpu_id
-    # gpu_list = gpu_id.split(',')
-    # gpus = [int(i) for i in gpu_list]
+    gpu_id = args.gpu_id
+    gpu_list = gpu_id.split(',')
+    gpus = [int(i) for i in gpu_list]
 
-    # print('Using config:')
-    # pprint.pprint(cfg)
-    # assert cfg.TEST.HAS_RPN
+    print('Using config:')
+    pprint.pprint(cfg)
+    assert cfg.TEST.HAS_RPN
 
-    # image_ids = load_image_ids(args.data_split)
-    # random.seed(10)
-    # random.shuffle(image_ids)
-    # # Split image ids between gpus
-    # image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
+    image_ids = load_image_ids(args.data_split)
+    random.seed(10)
+    random.shuffle(image_ids)
+    # Split image ids between gpus
+    image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
     
-    # caffe.init_log()
-    # caffe.log('Using devices %s' % str(gpus))
-    # procs = []    
+    caffe.init_log()
+    caffe.log('Using devices %s' % str(gpus))
+    procs = []    
     
-    # for i,gpu_id in enumerate(gpus):
-    #     outfile = '%s.%d' % (args.outfile, gpu_id)
-    #     p = Process(target=generate_tsv,
-    #                 args=(gpu_id, args.prototxt, args.caffemodel, image_ids[i], outfile))
-    #     p.daemon = True
-    #     p.start()
-    #     procs.append(p)
-    # for p in procs:
-    #     p.join()     
+    for i,gpu_id in enumerate(gpus):
+        outfile = '%s.%d' % (args.outfile, gpu_id)
+        p = Process(target=generate_tsv,
+                    args=(gpu_id, args.prototxt, args.caffemodel, image_ids[i], outfile))
+        p.daemon = True
+        p.start()
+        procs.append(p)
+    for p in procs:
+        p.join()     
 
-    merge_tsvs()       
+    # merge_tsvs()       
                   

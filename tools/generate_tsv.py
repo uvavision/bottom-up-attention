@@ -9,7 +9,7 @@
 # Example:
 # ./tools/generate_tsv.py --gpu 0,1,2,3,4,5,6,7 
 # --cfg experiments/cfgs/faster_rcnn_end2end_resnet.yml 
-# --def models/vg/ResNet-101/faster_rcnn_end2end/test.prototxt 
+# --def models/vg/ResNet-101/faster_rcnn_end2end_final/test.prototxt 
 # --out test2014_resnet101_faster_rcnn_genome.tsv 
 # --net data/faster_rcnn_models/resnet101_faster_rcnn_final.caffemodel 
 # --split coco_test2014
@@ -82,7 +82,7 @@ def load_image_ids(split_name):
                 split.append((filepath, image_id))  
     elif split_name == 'coco_all':
         with open('/af12/ft3ex/research/bottom-up-attention/data/coco/image_data.json') as f:
-            data_ =  json.load(f):
+            data_ =  json.load(f)
             for k, v in data_.items():
                 image_id = int(k)
                 filepath = os.path.join('/af12/ft3ex/research/bottom-up-attention/data/coco/images', v)
